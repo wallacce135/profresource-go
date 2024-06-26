@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/wallacce135/profresource/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -21,13 +22,18 @@ func ConnectToDatabase() {
 	database_passwd := os.Getenv("DATABASE_PASSWORD")
 	database_name := os.Getenv("DATABASE_NAME")
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb3", database_user, database_passwd, database_host, database_port, database_name)
+	database_migrate := os.Getenv("DATABASE_MIGRATE")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb3&parseTime=true", database_user, database_passwd, database_host, database_port, database_name)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
-	log.Print("dsn -> " + dsn)
 	if err != nil {
 		log.Fatal("Failed to connect to database: ", err)
+	}
+
+	if database_migrate == "true" {
+		db.AutoMigrate(&models.User{}, &models.Articles{}, &models.Comments{})
 	}
 
 	DBConnection = db

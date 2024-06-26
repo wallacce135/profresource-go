@@ -1,10 +1,30 @@
 package models
 
-type User struct {
-	// gorm.Model
+import "gorm.io/gorm"
 
-	User_Id       string `json:"user_id"`
-	User_name     string `json:"user_name"`
-	User_Email    string `json:"user_email"`
-	User_password string `json:"-"`
+type User struct {
+	gorm.Model
+
+	Username string     `gorm:"type:varchar(50) not null" json:"username"`
+	Email    string     `gorm:"type:varchar(100) not null" json:"email"`
+	Password string     `gorm:"type:varchar(255) not null" json:"password"`
+	Articles []Articles `gorm:"foreignKey:UserId"`
+	Comments []Comments `gorm:"foreignKey:UserId"`
+}
+
+type Articles struct {
+	gorm.Model
+
+	Title    string     `gorm:"not null" json:"title"`
+	Text     string     `gorm:"type:text not null" json:"text"`
+	Comments []Comments `gorm:"foreignKey:ArticleId"`
+	UserId   uint
+}
+
+type Comments struct {
+	gorm.Model
+
+	Text      string `gorm:"type:text not null" json:"text"`
+	UserId    uint
+	ArticleId uint
 }

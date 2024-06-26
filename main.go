@@ -12,6 +12,7 @@ import (
 
 func main() {
 
+	// fmt.Println(utils.GenerateIUserId())
 	env.LoadEnvironments()
 	database.ConnectToDatabase()
 
