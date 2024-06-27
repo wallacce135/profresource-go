@@ -80,7 +80,7 @@ func UpdateArticle(context *fiber.Ctx) error {
 	var article models.Articles
 	article_id := context.Params("id")
 
-	if err := context.BodyParser(&artInput); err != nil {
+	if err := context.BodyParser(artInput); err != nil {
 		return context.Status(400).JSON(fiber.Map{
 			"status":  "error",
 			"message": "Error while parsing article data!",

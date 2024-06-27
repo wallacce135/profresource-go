@@ -2,7 +2,6 @@ package users
 
 import (
 	"errors"
-	"fmt"
 	"net/mail"
 	"os"
 	"strings"
@@ -125,18 +124,14 @@ func Login(context *fiber.Ctx) error {
 		return context.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Error on login request", "errors": err.Error()})
 	}
 
-	fmt.Println(input)
-
 	userInput := input.Username
 	pass := input.Password
 	um, err := new(models.User), *new(error)
 
 	if valid(userInput) {
 		um, err = getUserByEmail(userInput)
-		fmt.Println("um.Email -> ", um)
 	} else {
 		um, err = getUserByUsername(userInput)
-		fmt.Println("um.username -> ", um)
 	}
 
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/wallacce135/profresource/articles"
+	"github.com/wallacce135/profresource/comments"
 	"github.com/wallacce135/profresource/middleware"
 	"github.com/wallacce135/profresource/users"
 )
@@ -23,4 +24,8 @@ func SetupRoutes(app *fiber.App) {
 	usersRouter.Delete("/:id", middleware.Protected(), users.DeleteOneUser)
 	usersRouter.Post("/register", users.Register)
 	usersRouter.Post("/login", users.Login)
+
+	commentsRouter := app.Group("/comments", logger.New())
+	commentsRouter.Get("/", middleware.Protected(), comments.GetAllComments)
+	commentsRouter.Post("/create", middleware.Protected(), comments.PostNewComment)
 }
