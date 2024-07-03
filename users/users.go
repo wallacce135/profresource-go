@@ -14,6 +14,15 @@ func GetAllUsers(context *fiber.Ctx) error {
 	return context.Status(200).JSON(users)
 }
 
+func GetAllActiveUsers(context *fiber.Ctx) error {
+
+	users := []models.User{}
+	database.DBConnection.Where("is_removed = 0").Find(&users)
+
+	return context.Status(200).JSON(users)
+
+}
+
 func GetOneUser(context *fiber.Ctx) error {
 	user_id := context.Params("id")
 	var user models.User
@@ -36,11 +45,27 @@ func DeleteOneUser(context *fiber.Ctx) error {
 	database.DBConnection.First(&user, user_id)
 
 	if user.Username == "" {
-		return context.Status(400).JSON(fiber.Map{"status": 400, "message": "User not found!"})
+		return context.Status(400).JSON(fiber.Map{"status": "error", "meessage": "User not found"})
 	}
 
-	database.DBConnection.Delete(&user, user_id)
+	database.DBConnection.Model(&user).Update("IsRemoved", 1)
 	return context.Status(200).JSON(fiber.Map{"status": "success", "message": "User successfully deleted from database"})
+
+}
+
+func GetUserBack(context *fiber.Ctx) error {
+
+	user_id := context.Params("id")
+	var user models.User
+
+	database.DBConnection.First(&user, user_id)
+
+	if user.Username == "" {
+		return context.Status(400).JSON(fiber.Map{"status": "error", "meessage": "User not found"})
+	}
+
+	database.DBConnection.Model(&user).Update("IsRemoved", 0)
+	return context.Status(200).JSON(fiber.Map{"status": "success", "message": "User successfully restored"})
 
 }
 

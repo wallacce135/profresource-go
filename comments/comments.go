@@ -1,6 +1,7 @@
 package comments
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -31,9 +32,11 @@ func GetAllComments(context *fiber.Ctx) error {
 
 func PostNewComment(context *fiber.Ctx) error {
 
+	article_id := context.Query("article_id")
+	fmt.Println(article_id)
+
 	type CommentInput struct {
-		Text       string `json:"text"`
-		Article_id string `json:"article_id"`
+		Text string `json:"text"`
 	}
 
 	var ci CommentInput
@@ -47,17 +50,14 @@ func PostNewComment(context *fiber.Ctx) error {
 		})
 	}
 
-	art_id, err := strconv.ParseUint(ci.Article_id, 10, 32)
+	comment.Text = ci.Text
 
+	article_ui64, err := strconv.ParseUint(article_id, 10, 64)
 	if err != nil {
-		return context.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Error while converting types!",
-		})
+		panic(err)
 	}
 
-	comment.ArticleId = uint(art_id)
-	comment.Text = ci.Text
+	comment.ArticleId = uint(article_ui64)
 
 	user_id, err := users.GetUserIdFromToken(context)
 
@@ -80,7 +80,45 @@ func PostNewComment(context *fiber.Ctx) error {
 	return context.Status(200).JSON(fiber.Map{
 		"status":  "success",
 		"message": "Comment created successfully",
-		"data":    comment,
+		"data":    "comment",
 	})
 
+}
+
+func DeleteOneComment(context *fiber.Ctx) error {
+
+	comment_id := context.Params("id")
+	var comment models.Comments
+
+	database.DBConnection.First(&comment, comment_id)
+
+	if comment.ID == 0 && comment.Text == "" {
+		return context.Status(400).JSON(fiber.Map{
+			"status":  "error",
+			"message": "Comment does not exist",
+		})
+	}
+
+	user_id, err := users.GetUserIdFromToken(context)
+
+	if err != nil {
+		context.Status(400).JSON(fiber.Map{
+			"status":  "error",
+			"message": "User with this token doee not exist",
+		})
+	}
+
+	if comment.UserId != user_id {
+		return context.Status(400).JSON(fiber.Map{
+			"status":  "error",
+			"message": "You unable to delete this article!",
+		})
+	}
+
+	database.DBConnection.Model(&comment).Update("IsRemoved", 1)
+
+	return context.Status(200).JSON(fiber.Map{
+		"status":  "success",
+		"message": "Comment deleted successfully",
+	})
 }

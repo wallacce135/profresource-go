@@ -18,14 +18,19 @@ func SetupRoutes(app *fiber.App) {
 	articlesRouter.Put("/:id", middleware.Protected(), articles.UpdateArticle)
 
 	usersRouter := app.Group("/users", logger.New())
-	usersRouter.Get("/", middleware.Protected(), users.GetAllUsers)
+	usersRouter.Get("/", middleware.Protected(), users.GetAllActiveUsers)
+	usersRouter.Get("/all", middleware.Protected(), users.GetAllUsers)
 	usersRouter.Post("/create", middleware.Protected(), users.CreateUser)
 	usersRouter.Get("/:id", middleware.Protected(), users.GetOneUser)
+
 	usersRouter.Delete("/:id", middleware.Protected(), users.DeleteOneUser)
+	usersRouter.Get("/restore/:id", middleware.Protected(), users.GetUserBack)
+
 	usersRouter.Post("/register", users.Register)
 	usersRouter.Post("/login", users.Login)
 
 	commentsRouter := app.Group("/comments", logger.New())
 	commentsRouter.Get("/", middleware.Protected(), comments.GetAllComments)
 	commentsRouter.Post("/create", middleware.Protected(), comments.PostNewComment)
+	commentsRouter.Delete("/:id", middleware.Protected(), comments.DeleteOneComment)
 }

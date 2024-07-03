@@ -172,19 +172,6 @@ func Login(context *fiber.Ctx) error {
 	return context.JSON(fiber.Map{"status": "success", "message": "Success login", "data": t})
 }
 
-// func validToken(t *jwt.Token, id string) bool {
-
-// 	n, err := strconv.Atoi(id)
-// 	if err != nil {
-// 		return false
-// 	}
-
-// 	claims := t.Claims.(jwt.MapClaims)
-// 	uid := int(claims["user_id"].(float64))
-
-// 	return uid == n
-// }
-
 func GetUserIdFromToken(context *fiber.Ctx) (uint, error) {
 
 	tokenString := strings.Split(context.GetReqHeaders()["Authorization"][0], "Bearer ")[1]

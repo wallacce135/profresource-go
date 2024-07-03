@@ -150,7 +150,8 @@ func DeleteArticle(context *fiber.Ctx) error {
 		})
 	}
 
-	database.DBConnection.Delete(&article, article_id)
+	// database.DBConnection.Delete(&article, article_id)
+	database.DBConnection.Model(&article).Update("IsRemoved", 1)
 
 	return context.Status(200).JSON(fiber.Map{
 		"status":  "success",
