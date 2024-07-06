@@ -1,0 +1,220 @@
+basePath: /
+definitions:
+  articles.ArticleBody:
+    properties:
+      'text:':
+        type: string
+      title:
+        type: string
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  models.Articles:
+    properties:
+      comments:
+        items:
+          $ref: '#/definitions/models.Comments'
+        type: array
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      isRemoved:
+        $ref: '#/definitions/sql.NullBool'
+      text:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+    type: object
+  models.Comments:
+    properties:
+      articleId:
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      isRemoved:
+        $ref: '#/definitions/sql.NullBool'
+      text:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+    type: object
+  sql.NullBool:
+    properties:
+      bool:
+        type: boolean
+      valid:
+        description: Valid is true if Bool is not NULL
+        type: boolean
+    type: object
+host: localhost:4000
+info:
+  contact: {}
+  title: Profresource go Application
+  version: "1.0"
+paths:
+  /articles:
+    get:
+      consumes:
+      - application/json
+      description: Get all articles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Articles'
+            type: array
+        "401":
+          description: Unauthorized
+          schema: {}
+      summary: Get all articles
+      tags:
+      - Articles
+  /articles/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Delete one article with provided ID
+      parameters:
+      - description: Article ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Article deleted successfully
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Article not found
+          schema:
+            type: string
+        "500":
+          description: You unable to delete this article!
+          schema:
+            type: string
+      summary: Delete one article with provided ID from database
+      tags:
+      - Article
+    get:
+      consumes:
+      - application/json
+      description: Get one article with provided ID
+      parameters:
+      - description: Article ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Articles'
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Article not found
+          schema:
+            type: string
+      summary: Get one article with provided ID
+      tags:
+      - Article
+    put:
+      consumes:
+      - application/json
+      description: Update information about an article
+      parameters:
+      - description: Body information for article update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/articles.ArticleBody'
+      - description: Article ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Articles'
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Article not found
+          schema:
+            type: string
+      summary: Update information about an article
+      tags:
+      - Article
+  /articles/create:
+    post:
+      consumes:
+      - application/json
+      description: Creating a new article
+      parameters:
+      - description: Body information for article creation
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/articles.ArticleBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Articles'
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Article not found
+          schema:
+            type: string
+      summary: Creating a new article
+      tags:
+      - Article
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

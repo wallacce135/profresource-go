@@ -1,15 +1,20 @@
 package routes
 
 import (
+	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/wallacce135/profresource/articles"
 	"github.com/wallacce135/profresource/comments"
+	_ "github.com/wallacce135/profresource/docs"
 	"github.com/wallacce135/profresource/middleware"
 	"github.com/wallacce135/profresource/users"
 )
 
 func SetupRoutes(app *fiber.App) {
+
+	app.Get("/docs/*", swagger.HandlerDefault)
+
 	articlesRouter := app.Group("/articles", logger.New())
 	articlesRouter.Get("/", middleware.Protected(), articles.GetAllAricles)
 	articlesRouter.Get("/:id", middleware.Protected(), articles.GetArticleById)

@@ -138,7 +138,7 @@ func Login(context *fiber.Ctx) error {
 		return context.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "Internal Server Error", "data": err})
 	} else if um == nil {
 		CheckPasswordHash(pass, "")
-		return context.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "Invalid identity or password", "data": err})
+		return context.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "Invalid username or password", "data": err})
 	} else {
 		ud = UserData{
 			ID:       um.ID,
