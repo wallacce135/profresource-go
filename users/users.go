@@ -14,6 +14,7 @@ import (
 // @Success 200 {object} []models.User{}
 // @Failure 401 {object} error
 // @Router /users/all [get]
+// @Security Bearer
 func GetAllUsers(context *fiber.Ctx) error {
 
 	users := []models.User{}
@@ -34,6 +35,7 @@ func GetAllUsers(context *fiber.Ctx) error {
 // @Success 200 {object} []models.User{}
 // @Failure 401 {object} error
 // @Router /users [get]
+// @Security Bearer
 func GetAllActiveUsers(context *fiber.Ctx) error {
 
 	users := []models.User{}
@@ -47,16 +49,18 @@ func GetAllActiveUsers(context *fiber.Ctx) error {
 
 }
 
-// GetOne Returns all users in the database
-// @Description Get all users in the database
-// @Summary Get all users in the database
+// GetOne Returns one user from database
+// @Description Returns one user from database
+// @Summary Returns one user from database
 // @Tags Users
 // @Accept json
 // @Produce json
-// @Success 200 {object} []models.User{}
+// @Param id path int true "User ID"
+// @Success 200 {object} []models.User{Data=models.User}
 // @Failure 404 {object} models.HttpResponse
 // @Failure 401 {object} models.HttpResponse
-// @Router /users [get]
+// @Router /users/:id [get]
+// @Security Bearer
 func GetOneUser(context *fiber.Ctx) error {
 	user_id := context.Params("id")
 	var user models.User
@@ -79,15 +83,16 @@ func GetOneUser(context *fiber.Ctx) error {
 }
 
 // DeleteOneUser Deletes user from database
-// @Description This method deletes user from database(change flag isRemoved to 1)
+// @Description Deletes user from database(change flag isRemoved to 1)
 // @Summary Deletes user from database
 // @Tags Users
 // @Produce json
 // @Param id path int true "User ID"
-// @Success 200 {object} models.HttpResponse
-// @Failure 400 {object} models.HttpResponse
-// @Failure 401 {object} models.HttpResponse
+// @Success 200 {object} models.HttpResponse{Data=models.User}
+// @Failure 400 {object} models.HttpResponse{Data=nil}
+// @Failure 401 {object} models.HttpResponse{Data=nil}
 // @Router /users/:id [delete]
+// @Security Bearer
 func DeleteOneUser(context *fiber.Ctx) error {
 
 	user_id := context.Params("id")
@@ -113,15 +118,16 @@ func DeleteOneUser(context *fiber.Ctx) error {
 }
 
 // GetUserBack Restores user in database
-// @Description This method restores user in database(change flag isRemoved to 0)
+// @Description Restores user in database(change flag isRemoved to 0)
 // @Summary Restores user in database
 // @Tags Users
 // @Produce json
 // @Param id path int true "User ID"
-// @Success 200 {object} models.HttpResponse
-// @Failure 400 {object} models.HttpResponse
-// @Failure 401 {object} models.HttpResponse
+// @Success 200 {object} models.HttpResponse{Data=models.User}
+// @Failure 400 {object} models.HttpResponse{Data=nil}
+// @Failure 401 {object} models.HttpResponse{Data=nil}
 // @Router /users/restore/:id [get]
+// @Security Bearer
 func GetUserBack(context *fiber.Ctx) error {
 
 	user_id := context.Params("id")
@@ -147,15 +153,16 @@ func GetUserBack(context *fiber.Ctx) error {
 }
 
 // CreateUser Allows loggined user to create a new user
-// @Description This method allows to create a new user in database for existing user
+// @Description Allows to create a new user in database for existing user
 // @Summary Allows loggined user to create a new user
 // @Tags Users
 // @Produce json
 // @Param request body models.NewUser true "Body information"
-// @Success 200 {object} models.HttpResponse
-// @Failure 400 {object} models.HttpResponse
-// @Failure 401 {object} models.HttpResponse
+// @Success 200 {object} models.HttpResponse{Data=models.User}
+// @Failure 400 {object} models.HttpResponse{Data=error}
+// @Failure 401 {object} models.HttpResponse{Data=error}
 // @Router /users/create [post]
+// @Security Bearer
 func CreateUser(context *fiber.Ctx) error {
 
 	user := new(models.User)

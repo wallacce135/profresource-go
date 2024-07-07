@@ -13,8 +13,6 @@ type User struct {
 	Email     string       `gorm:"type:varchar(100); not null" json:"email"`
 	Password  string       `gorm:"type:varchar(255) not null" json:"password"`
 	IsRemoved sql.NullBool `gorm:"default:false; not null" json:"isRemoved"`
-	// Articles  []Articles   `gorm:"foreignKey:UserId"`
-	// Comments  []Comments   `gorm:"foreignKey:UserId"`
 }
 
 type Articles struct {
@@ -32,6 +30,6 @@ type Comments struct {
 
 	Text      string       `gorm:"type:text not null" json:"text"`
 	IsRemoved sql.NullBool `gorm:"default:false; not null" json:"isRemoved"`
-	UserId    uint
-	ArticleId uint
+	UserId    uint         `json:"userId"`
+	ArticleId uint         `json:"articleId"`
 }

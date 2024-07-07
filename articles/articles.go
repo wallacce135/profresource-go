@@ -18,6 +18,7 @@ import (
 // @Success 200  {object}  []models.Articles
 // @Failure 401 {object} error
 // @Router /articles [get]
+// @Security Bearer
 func GetAllAricles(context *fiber.Ctx) error {
 	articles := []models.Articles{}
 	database.DBConnection.Find(&articles)
@@ -39,6 +40,7 @@ func GetAllAricles(context *fiber.Ctx) error {
 // @Failure 401 {object} error
 // @Failure 404 {string} string "Article not found"
 // @Router /articles/:id [get]
+// @Security Bearer
 func GetArticleById(context *fiber.Ctx) error {
 
 	var article models.Articles
@@ -75,6 +77,7 @@ type ArticleBody struct {
 // @Failure 401 {object} error
 // @Failure 404 {string} string "Article not found"
 // @Router /articles/create [post]
+// @Security Bearer
 func PostNewArticle(context *fiber.Ctx) error {
 
 	article := new(models.Articles)
@@ -116,6 +119,7 @@ func PostNewArticle(context *fiber.Ctx) error {
 // @Failure 401 {object} error
 // @Failure 404 {string} string "Article not found"
 // @Router /articles/:id [put]
+// @Security Bearer
 func UpdateArticle(context *fiber.Ctx) error {
 
 	var artInput ArticleBody
@@ -177,6 +181,7 @@ func UpdateArticle(context *fiber.Ctx) error {
 // @Failure 404 {string} string "Article not found"
 // @Failure 500 {string} string "You unable to delete this article!"
 // @Router /articles/:id [delete]
+// @Security Bearer
 func DeleteArticle(context *fiber.Ctx) error {
 
 	article_id := context.Params("id")

@@ -7,6 +7,11 @@ definitions:
       title:
         type: string
     type: object
+  comments.CommentInput:
+    properties:
+      text:
+        type: string
+    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -131,6 +136,8 @@ paths:
         "401":
           description: Unauthorized
           schema: {}
+      security:
+      - Bearer: []
       summary: Get all articles
       tags:
       - Articles
@@ -255,11 +262,127 @@ paths:
       summary: Creating a new article
       tags:
       - Articles
-  /users:
+  /comments:
     get:
+      description: Returns all comments from database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/models.Comments'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      summary: Returns all comments from database
+      tags:
+      - Comments
+  /comments/:id:
+    delete:
+      description: Deletes user's comment from database(change flag isRemoved to 1)
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  $ref: '#/definitions/models.Comments'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  type: object
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      summary: Deletes user's comment from database
+      tags:
+      - Comments
+  /comments/create:
+    post:
       consumes:
       - application/json
-      description: Get all users in the database
+      description: Creates a new comment in database, user id provided from JWT token
+      parameters:
+      - description: Body information for new comment
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/comments.CommentInput'
+      - description: article ID for comment creation
+        in: query
+        name: article_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  $ref: '#/definitions/models.Comments'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      summary: Creates a new comment in database
+      tags:
+      - Comments
+  /users:
+    get:
+      description: Get all active users in the database
       produces:
       - application/json
       responses:
@@ -271,19 +394,13 @@ paths:
             type: array
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.HttpResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.HttpResponse'
+          schema: {}
       summary: Get all users in the database
       tags:
       - Users
   /users/:id:
     delete:
-      description: This method deletes user from database(change flag isRemoved to
-        1)
+      description: Deletes user from database(change flag isRemoved to 1)
       parameters:
       - description: User ID
         in: path
@@ -296,16 +413,66 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.HttpResponse'
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  $ref: '#/definitions/models.User'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.HttpResponse'
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      summary: Deletes user from database
+      tags:
+      - Users
+    get:
+      consumes:
+      - application/json
+      description: Returns one user from database
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/models.User'
+              - properties:
+                  Data:
+                    $ref: '#/definitions/models.User'
+                type: object
+            type: array
         "401":
           description: Unauthorized
           schema:
             $ref: '#/definitions/models.HttpResponse'
-      summary: Deletes user from database
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      summary: Returns one user from database
       tags:
       - Users
   /users/all:
@@ -328,8 +495,7 @@ paths:
       - Users
   /users/create:
     post:
-      description: This method allows to create a new user in database for existing
-        user
+      description: Allows to create a new user in database for existing user
       parameters:
       - description: Body information
         in: body
@@ -343,15 +509,28 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.HttpResponse'
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  $ref: '#/definitions/models.User'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.HttpResponse'
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data: {}
+              type: object
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.HttpResponse'
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data: {}
+              type: object
       summary: Allows loggined user to create a new user
       tags:
       - Users
@@ -423,8 +602,7 @@ paths:
       - Users
   /users/restore/:id:
     get:
-      description: This method restores user in database(change flag isRemoved to
-        0)
+      description: Restores user in database(change flag isRemoved to 0)
       parameters:
       - description: User ID
         in: path
@@ -437,20 +615,35 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.HttpResponse'
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  $ref: '#/definitions/models.User'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.HttpResponse'
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  type: object
+              type: object
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.HttpResponse'
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                Data:
+                  type: object
+              type: object
       summary: Restores user in database
       tags:
       - Users
 securityDefinitions:
-  ApiKeyAuth:
+  Bearer:
     in: header
     name: Authorization
     type: apiKey
