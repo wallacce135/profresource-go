@@ -49,12 +49,17 @@ func valid(email string) bool {
 	return err == nil
 }
 
+// Register Allows user to create new user in the system
+// @Description Allows you to create a new user
+// @Summary Allows you to create a new user
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param request body models.NewUser true "Body information to create a new user"
+// @Success 200 {object} models.HttpResponse{data=models.NewUser}
+// @Failure 500 {object} models.HttpResponse{data=nil}
+// @Router /users/register [post]
 func Register(context *fiber.Ctx) error {
-
-	type NewUser struct {
-		Username string `json:"username"`
-		Email    string `json:"email"`
-	}
 
 	user := new(models.User)
 	if err := context.BodyParser(user); err != nil {
@@ -91,9 +96,10 @@ func Register(context *fiber.Ctx) error {
 		})
 	}
 
-	newUser := NewUser{
+	newUser := models.NewUser{
 		Email:    user.Email,
 		Username: user.Username,
+		Password: "password hashed!",
 	}
 
 	return context.Status(200).JSON(fiber.Map{
@@ -104,12 +110,18 @@ func Register(context *fiber.Ctx) error {
 
 }
 
+// Login Allows user to login in the system
+// @Description Allows user to login in the system
+// @Summary Allows user to login in the system
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param request body models.LoginInput true "Body information for login"
+// @Success 200 {object} models.HttpResponse
+// @Failure 401 {object} models.HttpResponse
+// @Failure 500 {object} models.HttpResponse
+// @Router /users/login [post]
 func Login(context *fiber.Ctx) error {
-
-	type LoginInput struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
 
 	type UserData struct {
 		ID       uint   `json:"id"`
@@ -117,7 +129,7 @@ func Login(context *fiber.Ctx) error {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
-	input := new(LoginInput)
+	input := new(models.LoginInput)
 	var ud UserData
 
 	if err := context.BodyParser(input); err != nil {
@@ -143,7 +155,6 @@ func Login(context *fiber.Ctx) error {
 		ud = UserData{
 			ID:       um.ID,
 			Username: um.Username,
-			Email:    um.Email,
 			Password: um.Password,
 		}
 	}

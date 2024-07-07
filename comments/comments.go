@@ -15,17 +15,18 @@ func GetAllComments(context *fiber.Ctx) error {
 	comments := []models.Comments{}
 	if err := database.DBConnection.Find(&comments).Error; err != nil {
 
-		return context.Status(400).JSON(fiber.Map{
-			"status": "error",
-			"error":  err,
+		return context.Status(400).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "can't find comments",
+			Data:    err,
 		})
 
 	}
 
-	return context.Status(200).JSON(fiber.Map{
-		"status":  "success",
-		"message": "Comments processed successfully",
-		"data":    comments,
+	return context.Status(200).JSON(models.HttpResponse{
+		Status:  "success",
+		Message: "Comments processed successfully",
+		Data:    comments,
 	})
 
 }
@@ -44,9 +45,10 @@ func PostNewComment(context *fiber.Ctx) error {
 
 	if err := context.BodyParser(&ci); err != nil {
 
-		return context.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": err.Error(),
+		return context.Status(400).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "can't parse comment JSON body",
+			Data:    err,
 		})
 	}
 
@@ -62,25 +64,27 @@ func PostNewComment(context *fiber.Ctx) error {
 	user_id, err := users.GetUserIdFromToken(context)
 
 	if err != nil {
-		return context.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "User not found!",
+		return context.Status(400).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "User not found!",
+			Data:    err,
 		})
 	}
 
 	comment.UserId = user_id
 
 	if err := database.DBConnection.Create(&comment).Error; err != nil {
-		return context.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Error while creating comment!",
+		return context.Status(400).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "Error while creating comment!",
+			Data:    nil,
 		})
 	}
 
-	return context.Status(200).JSON(fiber.Map{
-		"status":  "success",
-		"message": "Comment created successfully",
-		"data":    "comment",
+	return context.Status(200).JSON(models.HttpResponse{
+		Status:  "success",
+		Message: "Comment created successfully",
+		Data:    comment,
 	})
 
 }
@@ -93,32 +97,36 @@ func DeleteOneComment(context *fiber.Ctx) error {
 	database.DBConnection.First(&comment, comment_id)
 
 	if comment.ID == 0 && comment.Text == "" {
-		return context.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Comment does not exist",
+		return context.Status(400).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "Comment does not exist",
+			Data:    nil,
 		})
 	}
 
 	user_id, err := users.GetUserIdFromToken(context)
 
 	if err != nil {
-		context.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "User with this token doee not exist",
+		context.Status(400).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "User with this token doee not exist",
+			Data:    nil,
 		})
 	}
 
 	if comment.UserId != user_id {
-		return context.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "You unable to delete this article!",
+		return context.Status(400).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "You unable to delete this article!",
+			Data:    nil,
 		})
 	}
 
 	database.DBConnection.Model(&comment).Update("IsRemoved", 1)
 
-	return context.Status(200).JSON(fiber.Map{
-		"status":  "success",
-		"message": "Comment deleted successfully",
+	return context.Status(200).JSON(models.HttpResponse{
+		Status:  "success",
+		Message: "Comment deleted successfully",
+		Data:    comment,
 	})
 }

@@ -57,6 +57,49 @@ definitions:
       userId:
         type: integer
     type: object
+  models.HttpResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  models.LoginInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.NewUser:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.User:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      id:
+        type: integer
+      isRemoved:
+        $ref: '#/definitions/sql.NullBool'
+      password:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
   sql.NullBool:
     properties:
       bool:
@@ -122,7 +165,7 @@ paths:
             type: string
       summary: Delete one article with provided ID from database
       tags:
-      - Article
+      - Articles
     get:
       consumes:
       - application/json
@@ -149,7 +192,7 @@ paths:
             type: string
       summary: Get one article with provided ID
       tags:
-      - Article
+      - Articles
     put:
       consumes:
       - application/json
@@ -182,7 +225,7 @@ paths:
             type: string
       summary: Update information about an article
       tags:
-      - Article
+      - Articles
   /articles/create:
     post:
       consumes:
@@ -211,7 +254,201 @@ paths:
             type: string
       summary: Creating a new article
       tags:
-      - Article
+      - Articles
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get all users in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      summary: Get all users in the database
+      tags:
+      - Users
+  /users/:id:
+    delete:
+      description: This method deletes user from database(change flag isRemoved to
+        1)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      summary: Deletes user from database
+      tags:
+      - Users
+  /users/all:
+    get:
+      description: Get all users in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "401":
+          description: Unauthorized
+          schema: {}
+      summary: Get all users in the database
+      tags:
+      - Users
+  /users/create:
+    post:
+      description: This method allows to create a new user in database for existing
+        user
+      parameters:
+      - description: Body information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      summary: Allows loggined user to create a new user
+      tags:
+      - Users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Allows user to login in the system
+      parameters:
+      - description: Body information for login
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      summary: Allows user to login in the system
+      tags:
+      - Users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Allows you to create a new user
+      parameters:
+      - description: Body information to create a new user
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.NewUser'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.HttpResponse'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Allows you to create a new user
+      tags:
+      - Users
+  /users/restore/:id:
+    get:
+      description: This method restores user in database(change flag isRemoved to
+        0)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      summary: Restores user in database
+      tags:
+      - Users
 securityDefinitions:
   ApiKeyAuth:
     in: header

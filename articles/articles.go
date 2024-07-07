@@ -21,13 +21,17 @@ import (
 func GetAllAricles(context *fiber.Ctx) error {
 	articles := []models.Articles{}
 	database.DBConnection.Find(&articles)
-	return context.JSON(fiber.Map{"status": "success", "message": "Articles found successfully", "data": articles})
+	return context.JSON(models.HttpResponse{
+		Status:  "success",
+		Message: "Articles found successfully",
+		Data:    articles,
+	})
 }
 
 // GetArticleByID return one article with provided ID
 // @Description Get one article with provided ID
 // @Summary Get one article with provided ID
-// @Tags Article
+// @Tags Articles
 // @Accept json
 // @Produce json
 // @Param id path int true "Article ID" " "
@@ -44,8 +48,10 @@ func GetArticleById(context *fiber.Ctx) error {
 	database.DBConnection.First(&article, article_id)
 
 	if article.ID == 0 && article.Title == "" {
-		return context.Status(404).JSON(fiber.Map{
-			"message": "Article does not exist",
+		return context.Status(404).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "Article does not exist",
+			Data:    nil,
 		})
 	}
 
@@ -61,7 +67,7 @@ type ArticleBody struct {
 // PostNewArticle creates a new article
 // @Description Creating a new article
 // @Summary Creating a new article
-// @Tags Article
+// @Tags Articles
 // @Accept json
 // @Produce json
 // @Param request body ArticleBody true "Body information for article creation"
@@ -80,19 +86,20 @@ func PostNewArticle(context *fiber.Ctx) error {
 	user_id, err := users.GetUserIdFromToken(context)
 
 	if err != nil {
-		context.Status(401).JSON(fiber.Map{
-			"status":  "error",
-			"message": "User with this token does not exist",
+		context.Status(401).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "User with this token does not exist",
+			Data:    nil,
 		})
 	}
 	article.UserId = user_id
 
 	database.DBConnection.Create(&article)
 
-	return context.Status(200).JSON(fiber.Map{
-		"status":  "success",
-		"message": "Article successfully created",
-		"data":    article,
+	return context.Status(200).JSON(models.HttpResponse{
+		Status:  "success",
+		Message: "Article successfully created",
+		Data:    article,
 	})
 
 }
@@ -100,7 +107,7 @@ func PostNewArticle(context *fiber.Ctx) error {
 // UpdateArticle Update information about an article
 // @Description Update information about an article
 // @Summary Update information about an article
-// @Tags Article
+// @Tags Articles
 // @Accept json
 // @Produce json
 // @Param request body ArticleBody true "Body information for article update"
@@ -117,27 +124,30 @@ func UpdateArticle(context *fiber.Ctx) error {
 	article_id := context.Params("id")
 
 	if err := context.BodyParser(artInput); err != nil {
-		return context.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Error while parsing article data!",
+		return context.Status(400).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "Error while parsing article data!",
+			Data:    nil,
 		})
 	}
 
 	user_id, err := users.GetUserIdFromToken(context)
 
 	if err != nil {
-		context.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "User with this token does not exist",
+		context.Status(400).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "User with this token does not exist",
+			Data:    nil,
 		})
 	}
 
 	database.DBConnection.First(&article, article_id)
 
 	if article.UserId != user_id {
-		return context.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "You unable to update this article!",
+		return context.Status(400).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "You unable to update this article!",
+			Data:    nil,
 		})
 	}
 
@@ -147,9 +157,10 @@ func UpdateArticle(context *fiber.Ctx) error {
 
 	database.DBConnection.Save(&article)
 
-	return context.Status(200).JSON(fiber.Map{
-		"status":  "success",
-		"message": "Article updated successfully",
+	return context.Status(200).JSON(models.HttpResponse{
+		Status:  "success",
+		Message: "Article updated successfully",
+		Data:    article,
 	})
 
 }
@@ -157,7 +168,7 @@ func UpdateArticle(context *fiber.Ctx) error {
 // DeleteArticle Deletes one article with provided ID
 // @Description Delete one article with provided ID
 // @Summary Delete one article with provided ID from database
-// @Tags Article
+// @Tags Articles
 // @Accept json
 // @Produce json
 // @Param id path int true "Article ID"
@@ -175,35 +186,38 @@ func DeleteArticle(context *fiber.Ctx) error {
 	database.DBConnection.First(&article, article_id)
 
 	if article.Title == "" {
-		return context.Status(404).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Article not found",
-			"data":    nil,
+		return context.Status(404).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "Article not found",
+			Data:    nil,
 		})
 	}
 
 	user_id, err := users.GetUserIdFromToken(context)
 
 	if err != nil {
-		context.Status(401).JSON(fiber.Map{
-			"status":  "error",
-			"message": "User with this token does not exist",
+		context.Status(401).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "User with this token does not exist",
+			Data:    nil,
 		})
 	}
 
 	if article.UserId != user_id {
-		return context.Status(500).JSON(fiber.Map{
-			"status":  "error",
-			"message": "You unable to delete this article!",
+		return context.Status(500).JSON(models.HttpResponse{
+			Status:  "error",
+			Message: "You unable to delete this article!",
+			Data:    nil,
 		})
 	}
 
 	// database.DBConnection.Delete(&article, article_id)
 	database.DBConnection.Model(&article).Update("IsRemoved", 1)
 
-	return context.Status(200).JSON(fiber.Map{
-		"status":  "success",
-		"message": "Article deleted successfully",
+	return context.Status(200).JSON(models.HttpResponse{
+		Status:  "success",
+		Message: "Article deleted successfully",
+		Data:    article,
 	})
 
 }
