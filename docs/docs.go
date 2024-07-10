@@ -52,6 +52,11 @@ const docTemplate = `{
         },
         "/articles/:id": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get one article with provided ID",
                 "consumes": [
                     "application/json"
@@ -92,6 +97,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update information about an article",
                 "consumes": [
                     "application/json"
@@ -141,6 +151,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete one article with provided ID",
                 "consumes": [
                     "application/json"
@@ -189,6 +204,11 @@ const docTemplate = `{
         },
         "/articles/create": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Creating a new article",
                 "consumes": [
                     "application/json"
@@ -233,6 +253,11 @@ const docTemplate = `{
         },
         "/comments": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Returns all comments from database",
                 "produces": [
                     "application/json"
@@ -280,6 +305,11 @@ const docTemplate = `{
         },
         "/comments/:id": {
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Deletes user's comment from database(change flag isRemoved to 1)",
                 "produces": [
                     "application/json"
@@ -375,6 +405,11 @@ const docTemplate = `{
         },
         "/comments/create": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Creates a new comment in database, user id provided from JWT token",
                 "consumes": [
                     "application/json"
@@ -439,6 +474,11 @@ const docTemplate = `{
         },
         "/users": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all active users in the database",
                 "produces": [
                     "application/json"
@@ -466,6 +506,11 @@ const docTemplate = `{
         },
         "/users/:id": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Returns one user from database",
                 "consumes": [
                     "application/json"
@@ -523,6 +568,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Deletes user from database(change flag isRemoved to 1)",
                 "produces": [
                     "application/json"
@@ -600,6 +650,11 @@ const docTemplate = `{
         },
         "/users/all": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get all users in the database",
                 "produces": [
                     "application/json"
@@ -627,6 +682,11 @@ const docTemplate = `{
         },
         "/users/create": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Allows to create a new user in database for existing user",
                 "produces": [
                     "application/json"
@@ -812,6 +872,11 @@ const docTemplate = `{
         },
         "/users/restore/:id": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Restores user in database(change flag isRemoved to 0)",
                 "produces": [
                     "application/json"

@@ -170,6 +170,8 @@ paths:
           description: You unable to delete this article!
           schema:
             type: string
+      security:
+      - Bearer: []
       summary: Delete one article with provided ID from database
       tags:
       - Articles
@@ -197,6 +199,8 @@ paths:
           description: Article not found
           schema:
             type: string
+      security:
+      - Bearer: []
       summary: Get one article with provided ID
       tags:
       - Articles
@@ -230,6 +234,8 @@ paths:
           description: Article not found
           schema:
             type: string
+      security:
+      - Bearer: []
       summary: Update information about an article
       tags:
       - Articles
@@ -259,6 +265,8 @@ paths:
           description: Article not found
           schema:
             type: string
+      security:
+      - Bearer: []
       summary: Creating a new article
       tags:
       - Articles
@@ -287,6 +295,8 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/models.HttpResponse'
+      security:
+      - Bearer: []
       summary: Returns all comments from database
       tags:
       - Comments
@@ -338,6 +348,8 @@ paths:
                 Data:
                   type: object
               type: object
+      security:
+      - Bearer: []
       summary: Deletes user's comment from database
       tags:
       - Comments
@@ -377,6 +389,8 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/models.HttpResponse'
+      security:
+      - Bearer: []
       summary: Creates a new comment in database
       tags:
       - Comments
@@ -395,6 +409,8 @@ paths:
         "401":
           description: Unauthorized
           schema: {}
+      security:
+      - Bearer: []
       summary: Get all users in the database
       tags:
       - Users
@@ -437,6 +453,8 @@ paths:
                 Data:
                   type: object
               type: object
+      security:
+      - Bearer: []
       summary: Deletes user from database
       tags:
       - Users
@@ -472,6 +490,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/models.HttpResponse'
+      security:
+      - Bearer: []
       summary: Returns one user from database
       tags:
       - Users
@@ -490,6 +510,8 @@ paths:
         "401":
           description: Unauthorized
           schema: {}
+      security:
+      - Bearer: []
       summary: Get all users in the database
       tags:
       - Users
@@ -531,6 +553,8 @@ paths:
             - properties:
                 Data: {}
               type: object
+      security:
+      - Bearer: []
       summary: Allows loggined user to create a new user
       tags:
       - Users
@@ -639,6 +663,8 @@ paths:
                 Data:
                   type: object
               type: object
+      security:
+      - Bearer: []
       summary: Restores user in database
       tags:
       - Users
